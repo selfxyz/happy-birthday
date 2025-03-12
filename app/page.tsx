@@ -10,6 +10,7 @@ function Birthday() {
     const [address, setAddress] = useState(input);
 
     const [ensName, setEnsName] = useState<string | null>(null);
+    const [isOnchain, setIsOnchain] = useState(true);
 
     useEffect(() => {
         if (ethers.isAddress(input)) {
@@ -45,9 +46,9 @@ function Birthday() {
 
     const selfApp = new SelfAppBuilder({
         appName: "Self Birthday",
-        scope: "Self-Denver-Birthday",
-        endpoint: "https://happy-birthday-rho-nine.vercel.app/api/verify",
-        // endpoint: "https://6883-37-168-31-204.ngrok-free.app/api/verify",
+        scope: "Onchain-Disclose-example",
+        endpointType: isOnchain ? 'staging_celo' : 'staging_https',
+        endpoint: isOnchain ? "0xd659924838af1e403709ED833Fcb9289d82837E3" : 'https://happy-birthday-rho-nine.vercel.app/api/verify',
         logoBase64: logo,
         userId: address,
         userIdType: "hex",
@@ -99,6 +100,28 @@ function Birthday() {
                     <h2 className="text-2xl font-semibold mb-6 text-center">
                         🎉 It&apos;s your birthday? Claim 100 USDC 🎂 🎁
                     </h2>
+
+                    <div className="mb-6">
+                        <label className="flex items-center justify-between cursor-pointer">
+                            <span className="text-sm font-medium">
+                                Verification Type: {isOnchain ? 'Onchain' : 'Offchain'}
+                            </span>
+                            <div className="relative">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only"
+                                    checked={isOnchain}
+                                    onChange={() => setIsOnchain(!isOnchain)}
+                                />
+                                <div className={`block w-14 h-8 rounded-full transition-colors ${
+                                    isOnchain ? 'bg-blue-600' : 'bg-gray-400'
+                                }`}></div>
+                                <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${
+                                    isOnchain ? 'translate-x-6' : 'translate-x-0'
+                                }`}></div>
+                            </div>
+                        </label>
+                    </div>
 
                     <div className="mb-6">
                         <label className="block text-sm font-medium mb-2">

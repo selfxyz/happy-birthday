@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             console.log("Extracted address from verification result:", address);
 
             // Contract details
-            const contractAddress = "0x305B5C02C9E95E5247c66b8B19ce54F0ce130bCb";
+            const contractAddress = "0xd659924838af1e403709ED833Fcb9289d82837E3";
 
             // Connect to Celo network
             const provider = new ethers.JsonRpcProvider("https://forno.celo.org");
