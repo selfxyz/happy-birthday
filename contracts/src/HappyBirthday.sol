@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import {SelfVerificationRoot} from "../abstract/SelfVerificationRoot.sol";
-import {ISelfVerificationRoot} from "../interfaces/ISelfVerificationRoot.sol";
-import {IVcAndDiscloseCircuitVerifier} from "../interfaces/IVcAndDiscloseCircuitVerifier.sol";
-import {IIdentityVerificationHubV1} from "../interfaces/IIdentityVerificationHubV1.sol";
+import {SelfVerificationRoot} from "@selfxyz/abstract/SelfVerificationRoot.sol";
+import {ISelfVerificationRoot} from "@selfxyz/interfaces/ISelfVerificationRoot.sol";
+import {IVcAndDiscloseCircuitVerifier} from "@selfxyz/interfaces/IVcAndDiscloseCircuitVerifier.sol";
+import {IIdentityVerificationHubV1} from "@selfxyz/interfaces/IIdentityVerificationHubV1.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {Formatter} from "../libraries/Formatter.sol";
-import {CircuitAttributeHandler} from "../libraries/CircuitAttributeHandler.sol";
-import {CircuitConstants} from "../constants/CircuitConstants.sol";
+import {Formatter} from "@selfxyz/libraries/Formatter.sol";
+import {CircuitAttributeHandler} from "@selfxyz/libraries/CircuitAttributeHandler.sol";
+import {CircuitConstants} from "@selfxyz/constants/CircuitConstants.sol";
 
 contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
     using SafeERC20 for IERC20;
@@ -116,7 +116,7 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
             timeDifference = dobInThisYearTimestamp - currentTime;
         }
 
-        uint256 fiveDaysInSeconds = 7 days;
+        uint256 fiveDaysInSeconds = 5 days;
         return timeDifference <= fiveDaysInSeconds;
     }
 
