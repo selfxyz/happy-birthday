@@ -146,7 +146,6 @@ function Birthday() {
                             <SelfQRcodeWrapper
                                 selfApp={selfApp}
                                 onSuccess={handleSuccess}
-                                websocketUrl="wss://websocket.staging.self.xyz"
                                 darkMode={false}
                             />
                         </div>
