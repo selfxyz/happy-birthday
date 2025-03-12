@@ -637,9 +637,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@selfxyz/core@npm:^0.0.6":
-  version: 0.0.6
-  resolution: "@selfxyz/core@npm:0.0.6"
+"@selfxyz/core@npm:^0.0.7":
+  version: 0.0.7
+  resolution: "@selfxyz/core@npm:0.0.7"
   dependencies:
     "@types/react": "npm:^18.3.4"
     "@types/react-dom": "npm:^18.3.0"
@@ -650,13 +650,13 @@ __metadata:
   peerDependencies:
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 10c0/95744fc5b7e6e58d01f7d29b6da46bfaa7f7ccee6012f8c0f4b7f5135b36a748866f8b1feece40db837bceea39f1ecb9f3fcf52ad686cb47a49d63b525e587ec
+  checksum: 10c0/40397ecd762924621a786fd9902b534adc9ed887fdf2b2576ce0cb157993a5e580807c2c531978409b8593d32ede96461c7dbc289e207adc8fb4863d0e1be183
   languageName: node
   linkType: hard
 
-"@selfxyz/qrcode@npm:^0.0.9":
-  version: 0.0.9
-  resolution: "@selfxyz/qrcode@npm:0.0.9"
+"@selfxyz/qrcode@npm:^0.0.10":
+  version: 0.0.10
+  resolution: "@selfxyz/qrcode@npm:0.0.10"
   dependencies:
     "@types/react": "npm:^18.3.4"
     "@types/react-dom": "npm:^18.3.0"
@@ -673,7 +673,7 @@ __metadata:
     lottie-react: ^2.4.0
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 10c0/29018a6fc1d8d5d9873fdd7115c9b5312525156ac33e711cbb878d7658c3a11df63e36adcfe6413fbf4bf7c2b86a2d8694afe5bd46b8b4959b50538d6f7b2201
+  checksum: 10c0/d7df2e73a803ae11eb3373cec86b524f5cdaaaf123a4736031e3f81159f35d637734a7b12047c37c78486e3f2eb03cea2859b2ab78f8b3f4d16a46cf76198018
   languageName: node
   linkType: hard
 
@@ -3854,8 +3854,8 @@ __metadata:
   resolution: "playground@workspace:."
   dependencies:
     "@eslint/eslintrc": "npm:^3"
-    "@selfxyz/core": "npm:^0.0.6"
-    "@selfxyz/qrcode": "npm:^0.0.9"
+    "@selfxyz/core": "npm:^0.0.7"
+    "@selfxyz/qrcode": "npm:^0.0.10"
     "@types/node": "npm:^20"
     "@types/react": "npm:^19.0.10"
     "@types/react-dom": "npm:^19.0.4"
