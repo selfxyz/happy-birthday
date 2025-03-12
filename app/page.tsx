@@ -48,7 +48,7 @@ function Birthday() {
         appName: "Self Birthday",
         scope: "Onchain-Disclose-example",
         endpointType: isOnchain ? 'staging_celo' : 'staging_https',
-        endpoint: isOnchain ? "0x3Dd6fc52d2bA4221E02ae3A0707377B56FEA845a" : 'https://happy-birthday-rho-nine.vercel.app/api/verify',
+        endpoint: isOnchain ? "0xd659924838af1e403709ED833Fcb9289d82837E3" : 'https://happy-birthday-rho-nine.vercel.app/api/verify',
         logoBase64: logo,
         userId: address,
         userIdType: "hex",
