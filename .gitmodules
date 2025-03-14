@@ -4,9 +4,6 @@
 [submodule "contracts/lib/forge-std"]
 	path = contracts/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
-[submodule "contracts/lib/self"]
-	path = contracts/lib/self
-	url = https://github.com/selfxyz/self
 [submodule "contracts/lib/openzeppelin-foundry-upgrades"]
 	path = contracts/lib/openzeppelin-foundry-upgrades
 	url = https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades

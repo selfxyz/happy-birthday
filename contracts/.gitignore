@@ -3,9 +3,12 @@ cache/
 out/
 
 # Ignores development broadcast logs
-!/broadcast
-/broadcast/*/31337/
-/broadcast/**/dry-run/
+/broadcast/
+!/broadcast/HappyBirthday.s.sol/
+/broadcast/HappyBirthday.s.sol/*
+!/broadcast/HappyBirthday.s.sol/42220/
+/broadcast/HappyBirthday.s.sol/42220/*
+!/broadcast/HappyBirthday.s.sol/42220/run-latest.json
 
 # Docs
 docs/

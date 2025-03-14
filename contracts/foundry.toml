@@ -1,11 +1,23 @@
 [profile.default]
 src = "src"
 out = "out"
-libs = ["lib"]
+libs = ["lib", "../node_modules"]
 remappings = [
     "@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/",
     "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
-    "@selfxyz/=lib/self/contracts/contracts/"
+    "@selfxyz/=../node_modules/@selfxyz/contracts/contracts"
 ]
+allow_paths = ["../node_modules"]
+
+# Etherscan API key configuration
+[etherscan]
+ethereum = { key = "${ETHERSCAN_API_KEY}" }
+celo = { key = "${CELOSCAN_API_KEY}", url = "https://api.celoscan.io/api" }
+celo_alfajores = { key = "${CELOSCAN_API_KEY}", url = "https://api-alfajores.celoscan.io/api" }
+
+# Chain configuration
+[rpc_endpoints]
+celo = "${CELO_RPC_URL}"
+celo_alfajores = "https://alfajores-forno.celo-testnet.org"
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
