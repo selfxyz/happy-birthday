@@ -37,22 +37,31 @@ This example introduces a contract that verifies a user's passport birthday and 
      Uncomment the line for production and comment the staging line:
      ```javascript
      // For prod environment
-     const DEFAULT_IDENTITY_VERIFICATION_HUB = "0x9AcA2112D34Ef021084264F6f5eef2a99a5bA7b1";
+     const DEFAULT_IDENTITY_VERIFICATION_HUB = "0x77117D60eaB7C044e785D68edB6C7E0e134970E";
      // For staging environment
-     // const DEFAULT_IDENTITY_VERIFICATION_HUB = "0xDCAa9D9b8E8Bb5696c5d4b47da84aD37b8DEb9A8";
+     // const DEFAULT_IDENTITY_VERIFICATION_HUB = "0x3e2487a250e2A7b56c7ef5307Fb591Cc8C83623D";
+     // For mainnet environment
+     const token = "0xcebA9300f2b948710d2653dD7B07f33A8B32118C";
+     // For staging environment
+     // const token = "0x2F25deB3848C207fc8E0c34035B3Ba7fC157602B";
      ```
    - For mock passports (staging/testing environment):
      Keep the staging environment line uncommented (default):
      ```javascript
      // For prod environment
-     // const DEFAULT_IDENTITY_VERIFICATION_HUB = "0x9AcA2112D34Ef021084264F6f5eef2a99a5bA7b1";
+     // const DEFAULT_IDENTITY_VERIFICATION_HUB = "0x77117D60eaB7C044e785D68edB6C7E0e134970E";
      // For staging environment
-     const DEFAULT_IDENTITY_VERIFICATION_HUB = "0xDCAa9D9b8E8Bb5696c5d4b47da84aD37b8DEb9A8";
+     const DEFAULT_IDENTITY_VERIFICATION_HUB = "0x3e2487a250e2A7b56c7ef5307Fb591Cc8C83623D";
+     // For mainnet environment
+     // const token = "0xcebA9300f2b948710d2653dD7B07f33A8B32118C";
+     // For staging environment
+     const token = "0x2F25deB3848C207fc8E0c34035B3Ba7fC157602B";
      ```
 
 6. Deploy the contracts:
+Check package.json and choose network
    ```bash
-   yarn run deploy
+   yarn run deploy:NETWORK_NAME
    ```
 
 ### Setting Up the Frontend
@@ -72,37 +81,16 @@ This example introduces a contract that verifies a user's passport birthday and 
    - Fill in the required values in the `.env` file
 
 4. Update the contract address:
-   - Open `frontend/pages/api/verify.ts`
-   - Find the line with `const contractAddress = "0x448333D3b622bc32629583a01e544f7bc7509237";`
-   - Replace the address with the address of your newly deployed contract
+   - Open `frontend/app/page.tsx`
+   - Find where the SelfAppBuilder is initialized
+   - Replace the address in the endpoint field with the address of your newly deployed contract
 
-5. Configure the passport mode in `frontend/app/page.tsx`:
-   - For real passports (production environment):
-     Set `devMode` to `false` in the `selfApp` configuration:
-     ```javascript
-     devMode: false,
-     ```
-   - For mock passports (staging/testing environment):
-     Set `devMode` to `true` in the `selfApp` configuration:
-     ```javascript
-     devMode: true,
-     ```
-
-6. Start the development server:
+5. Start the development server:
    ```bash
    yarn dev
    ```
 
-7. Set up ngrok for local development:
-   - In a new terminal, start ngrok to expose your local server:
-     ```bash
-     ngrok http 3000
-     ```
-   - Copy the generated ngrok URL (it will look like `https://xxxx-xxx-xxx-xx.ngrok-free.app`)
-   - Open `frontend/app/page.tsx` and find the `endpoint` line in the `selfApp` configuration (around line 60)
-   - Replace the existing URL with your ngrok URL:
-     ```javascript
-     endpoint: "https://your-ngrok-url.ngrok-free.app/api/verify",
-     ```
+6. Send USDC to the deployed contract:
+   Deposit the USDC that the deployed contract will distribute to eligible users.
 
-8. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+7. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
