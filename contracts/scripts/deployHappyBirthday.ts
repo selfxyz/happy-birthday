@@ -15,11 +15,11 @@ async function main() {
   console.log("Calculated future contract address:", futureAddress);
   
   // For prod environment
-  // const identityVerificationHub = "0x9AcA2112D34Ef021084264F6f5eef2a99a5bA7b1";
+  // const identityVerificationHub = "0x77117D60eaB7C044e785D68edB6C7E0e134970E";
   // For staging environment
-  const identityVerificationHub = "0xDCAa9D9b8E8Bb5696c5d4b47da84aD37b8DEb9A8";
+  const identityVerificationHub = "0x3e2487a250e2A7b56c7ef5307Fb591Cc8C83623D";
 
-  const scope = hashEndpointWithScope("https://bfcf-2400-4150-8300-2d00-f83f-9c52-f581-17b9.ngrok-free.app", 'Self-Denver-Birthday');
+  const scope = hashEndpointWithScope(futureAddress, 'Self-Birthday-Example');
   const attestationId = 1n;
 
   // For mainnet environment
@@ -40,21 +40,29 @@ async function main() {
     identityVerificationHub,
     scope,
     attestationId,
-    token,
-    olderThanEnabled,
-    olderThan,
-    forbiddenCountriesEnabled,
-    forbiddenCountriesListPacked,
-    ofacEnabled
+    token
   );
   
   await selfHappyBirthday.waitForDeployment();
   
   const deployedAddress = await selfHappyBirthday.getAddress();
   console.log("SelfHappyBirthday deployed to:", deployedAddress);
+
+  console.log("\nSetting verification config...");
+  const verificationConfig = {
+    olderThanEnabled,
+    olderThan,
+    forbiddenCountriesEnabled,
+    forbiddenCountriesListPacked,
+    ofacEnabled
+  };
+
+  const setConfigTx = await selfHappyBirthday.setVerificationConfig(verificationConfig);
+  await setConfigTx.wait();
+  console.log("Verification config set successfully");
   
-  console.log("To verify on Celoscan:");
-  console.log(`npx hardhat verify --network celo ${deployedAddress} ${identityVerificationHub} ${scope} ${attestationId} ${token} ${olderThanEnabled} ${olderThan} ${forbiddenCountriesEnabled} "[${forbiddenCountriesListPacked.join(',')}]" "[${ofacEnabled.join(',')}]"`);
+  console.log("\nTo verify on Celoscan:");
+  console.log(`npx hardhat verify --network celoAlfajores ${deployedAddress} ${identityVerificationHub} ${scope} ${attestationId} ${token}`);
 }
 
 main()

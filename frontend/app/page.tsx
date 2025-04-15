@@ -46,14 +46,15 @@ function Birthday() {
 
     const selfApp = new SelfAppBuilder({
         appName: "Self Birthday",
-        scope: "Self-Denver-Birthday",
+        scope: "Self-Birthday-Example",
         // endpoint: "https://happy-birthday-rho-nine.vercel.app/api/verify",
         // run `ngrok http 3000` and copy the url here to test locally
-        endpoint: "https://bfcf-2400-4150-8300-2d00-f83f-9c52-f581-17b9.ngrok-free.app/api/verify",
+        endpoint: "0xfe4c62a59a351836c1F5Ea26BcAdaF8d93ebe66A",
+        endpointType: "staging_celo",
         logoBase64: logo,
         userId: address,
         userIdType: "hex",
-        disclosures: { 
+        disclosures: {
             date_of_birth: true,
         },
         devMode: true,
