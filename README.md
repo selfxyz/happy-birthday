@@ -23,12 +23,16 @@ This example introduces a contract that verifies a user's passport birthday and 
    yarn install
    ```
 
-3. Build the contracts:
+3. Configure environment variables:
+   - Copy `.env.example` to `.env`
+   - Fill in the required values in the `.env` file
+
+4. Build the contracts:
    ```bash
    yarn run build
    ```
 
-4. Configure the passport environment in the `contracts/ignition/modules/SelfHappyBirthday.ts` file:
+5. Configure the passport environment in the `contracts/ignition/modules/SelfHappyBirthday.ts` file:
    - For real passports (production environment):
      Uncomment the line for production and comment the staging line:
      ```javascript
@@ -45,10 +49,6 @@ This example introduces a contract that verifies a user's passport birthday and 
      // For staging environment
      const DEFAULT_IDENTITY_VERIFICATION_HUB = "0xDCAa9D9b8E8Bb5696c5d4b47da84aD37b8DEb9A8";
      ```
-
-5. Configure environment variables:
-   - Copy `.env.example` to `.env`
-   - Fill in the required values in the `.env` file
 
 6. Deploy the contracts:
    ```bash

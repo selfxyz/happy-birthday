@@ -3,18 +3,17 @@ pragma solidity 0.8.28;
 
 import {SelfVerificationRoot} from "@selfxyz/contracts/contracts/abstract/SelfVerificationRoot.sol";
 import {ISelfVerificationRoot} from "@selfxyz/contracts/contracts/interfaces/ISelfVerificationRoot.sol";
-import {IVcAndDiscloseCircuitVerifier} from "@selfxyz/contracts/contracts/interfaces/IVcAndDiscloseCircuitVerifier.sol";
-import {IIdentityVerificationHubV1} from "@selfxyz/contracts/contracts/interfaces/IIdentityVerificationHubV1.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {SelfCircuitLibrary} from "@selfxyz/contracts/contracts/libraries/SelfCircuitLibrary.sol";
 import {Formatter} from "@selfxyz/contracts/contracts/libraries/Formatter.sol";
 import {CircuitAttributeHandler} from "@selfxyz/contracts/contracts/libraries/CircuitAttributeHandler.sol";
-import {CircuitConstants} from "@selfxyz/contracts/contracts/constants/CircuitConstants.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
     using SafeERC20 for IERC20;
 
     IERC20 public immutable usdc;
+    string public dobReadable;
 
     // 100 dollar
     // uint256 constant CLAIMABLE_AMOUNT = 100000000;
@@ -31,69 +30,55 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
         address _identityVerificationHub, 
         uint256 _scope, 
         uint256 _attestationId,
-        address _token,
-        bool _olderThanEnabled,
-        uint256 _olderThan,
-        bool _forbiddenCountriesEnabled,
-        uint256[4] memory _forbiddenCountriesListPacked,
-        bool[3] memory _ofacEnabled
+        address _token
     )
         SelfVerificationRoot(
             _identityVerificationHub, 
             _scope, 
-            _attestationId, 
-            _olderThanEnabled,
-            _olderThan,
-            _forbiddenCountriesEnabled,
-            _forbiddenCountriesListPacked,
-            _ofacEnabled
+            _attestationId
         )
         Ownable(_msgSender())
     {
         usdc = IERC20(_token);
     }
 
+    function setVerificationConfig(
+        ISelfVerificationRoot.VerificationConfig memory newVerificationConfig
+    ) external onlyOwner {
+        _setVerificationConfig(newVerificationConfig);
+    }
+
     function verifySelfProof(
-        IVcAndDiscloseCircuitVerifier.VcAndDiscloseProof memory proof
+        ISelfVerificationRoot.DiscloseCircuitProof memory proof
     )
         public
         override
     {
-        if (_scope != proof.pubSignals[CircuitConstants.VC_AND_DISCLOSE_SCOPE_INDEX]) {
-            revert InvalidScope();
-        }
 
-        if (_attestationId != proof.pubSignals[CircuitConstants.VC_AND_DISCLOSE_ATTESTATION_ID_INDEX]) {
-            revert InvalidAttestationId();
-        }
-
-        if (_nullifiers[proof.pubSignals[CircuitConstants.VC_AND_DISCLOSE_NULLIFIER_INDEX]]) {
+        if (_nullifiers[proof.pubSignals[NULLIFIER_INDEX]]) {
             revert RegisteredNullifier();
         }
 
-        IIdentityVerificationHubV1.VcAndDiscloseVerificationResult memory result = _identityVerificationHub.verifyVcAndDisclose(
-            IIdentityVerificationHubV1.VcAndDiscloseHubProof({
-                olderThanEnabled: _verificationConfig.olderThanEnabled,
-                olderThan: _verificationConfig.olderThan,
-                forbiddenCountriesEnabled: _verificationConfig.forbiddenCountriesEnabled,
-                forbiddenCountriesListPacked: _verificationConfig.forbiddenCountriesListPacked,
-                ofacEnabled: _verificationConfig.ofacEnabled,
-                vcAndDiscloseProof: proof
-            })
-        );
+        super.verifySelfProof(proof);
 
-        if (_isWithinBirthdayWindow(result.revealedDataPacked)) {
-            _nullifiers[result.nullifier] = true;
-            usdc.safeTransfer(address(uint160(result.userIdentifier)), CLAIMABLE_AMOUNT);
-            emit USDCClaimed(address(uint160(result.userIdentifier)), CLAIMABLE_AMOUNT);
+        if (_isWithinBirthdayWindow(
+                [
+                    proof.pubSignals[REVEALED_DATA_PACKED_INDEX],
+                    proof.pubSignals[REVEALED_DATA_PACKED_INDEX + 1],
+                    proof.pubSignals[REVEALED_DATA_PACKED_INDEX + 2]
+                ]
+            )
+        ) {
+            _nullifiers[proof.pubSignals[NULLIFIER_INDEX]] = true;
+            usdc.safeTransfer(address(uint160(proof.pubSignals[USER_IDENTIFIER_INDEX])), CLAIMABLE_AMOUNT);
+            emit USDCClaimed(address(uint160(proof.pubSignals[USER_IDENTIFIER_INDEX])), CLAIMABLE_AMOUNT);
         } else {
             revert("Not eligible: Not within 5 days of birthday");
         }
     }
 
-    function _isWithinBirthdayWindow(uint256[3] memory revealedDataPacked) internal view returns (bool) {
-        bytes memory charcodes = Formatter.fieldElementsToBytes(revealedDataPacked);
-        string memory dob = CircuitAttributeHandler.getDateOfBirth(charcodes);
+    function _isWithinBirthdayWindow(uint256[3] memory revealedDataPacked) internal returns (bool) {
+        string memory dob = SelfCircuitLibrary.getDateOfBirth(revealedDataPacked);
 
         bytes memory dobBytes = bytes(dob);
         bytes memory dayBytes = new bytes(2);
@@ -108,7 +93,8 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
         string memory day = string(dayBytes);
         string memory month = string(monthBytes);
         string memory dobInThisYear = string(abi.encodePacked("25", month, day));
-        uint256 dobInThisYearTimestamp = Formatter.dateToUnixTimestamp(dobInThisYear);
+
+        uint256 dobInThisYearTimestamp = SelfCircuitLibrary.dateToTimestamp(dobInThisYear);
 
         uint256 currentTime = block.timestamp;
         uint256 timeDifference;
@@ -120,6 +106,7 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
         }
 
         uint256 fiveDaysInSeconds = 5 days;
+
         return timeDifference <= fiveDaysInSeconds;
     }
 
