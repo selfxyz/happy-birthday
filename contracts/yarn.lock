@@ -7,9 +7,9 @@
   resolved "https://registry.yarnpkg.com/@adraffy/ens-normalize/-/ens-normalize-1.10.1.tgz#63430d04bd8c5e74f8d7d049338f1cd9d4f02069"
   integrity sha512-96Z2IP3mYmF1Xg2cDm8f1gWGf/HUVedQ3FMifV4kG/PQ4yEP51xDtRAEfhVNt5f/uzpNkZHwWQuUcu6D6K+Ekw==
 
-"@ashpect/smt@https://github.com/ashpect/smt#main":
+"@ashpect/smt@git+https://github.com/ashpect/smt.git#main":
   version "1.0.0"
-  resolved "https://github.com/ashpect/smt#4f73fd24adb06a7f8efd6fd2d3ed58e9e2f2691a"
+  resolved "git+https://github.com/ashpect/smt.git#4f73fd24adb06a7f8efd6fd2d3ed58e9e2f2691a"
 
 "@babel/code-frame@^7.12.13":
   version "7.26.2"
@@ -876,10 +876,10 @@
     "@noble/hashes" "~1.4.0"
     "@scure/base" "~1.1.6"
 
-"@selfxyz/contracts@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@selfxyz/contracts/-/contracts-0.0.7.tgz#4ab62b6bac970e4345fa514785434015537c1027"
-  integrity sha512-3cWDjDkshG/E0pOz0fWUW/n3cH3G/mlYhc0YOG8yWOwCtmDQTE+7mid2aFvej/iLONdgLF83fvUDmsSYNOIjjg==
+"@selfxyz/contracts@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@selfxyz/contracts/-/contracts-0.0.8.tgz#4eed5fd5a048a8094b4817393166df0a0d49e699"
+  integrity sha512-9GpZJmIKuax8JyyCaJTy8cKR7LQ1T03VsXv0UkNRR6ZoObh3TH66+cFybYcKGSEHK2jTmIBRVFTJpR7M0uyAUA==
   dependencies:
     "@ashpect/smt" "https://github.com/ashpect/smt#main"
     "@eth-optimism/hardhat-ovm" "^0.2.4"

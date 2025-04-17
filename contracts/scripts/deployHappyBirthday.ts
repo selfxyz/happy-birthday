@@ -39,7 +39,7 @@ async function main() {
   const selfHappyBirthday = await SelfHappyBirthday.deploy(
     identityVerificationHub,
     scope,
-    attestationId,
+    [attestationId],
     token
   );
   
