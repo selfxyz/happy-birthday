@@ -27,13 +27,13 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
     constructor(
         address _identityVerificationHub, 
         uint256 _scope, 
-        uint256 _attestationId,
+        uint256[] memory _attestationIds,
         address _token
     )
         SelfVerificationRoot(
             _identityVerificationHub, 
             _scope, 
-            _attestationId
+            _attestationIds
         )
         Ownable(_msgSender())
     {
@@ -60,11 +60,7 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
         super.verifySelfProof(proof);
 
         if (_isWithinBirthdayWindow(
-                [
-                    proof.pubSignals[REVEALED_DATA_PACKED_INDEX],
-                    proof.pubSignals[REVEALED_DATA_PACKED_INDEX + 1],
-                    proof.pubSignals[REVEALED_DATA_PACKED_INDEX + 2]
-                ]
+                getRevealedDataPacked(proof.pubSignals)
             )
         ) {
             _nullifiers[proof.pubSignals[NULLIFIER_INDEX]] = true;
