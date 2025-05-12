@@ -13,8 +13,6 @@
     "@selfxyz/core": "^0.0.19",
     "@selfxyz/qrcode": "^0.0.17",
     "@vercel/kv": "^3.0.0",
-    "eslint": "9.22.0",
-    "eslint-config-next": "15.2.2",
     "ethers": "^6.13.5",
     "next": "^15.2.2",
     "react": "^19.0.0",
