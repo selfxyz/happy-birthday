@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "nice": "next lint"
+    "build:hardhat": "npx hardhat compile",
+    "build:foundry": "forge build",
+    "deploy:hardhat": "npx hardhat run scripts/hardhat/deployHappyBirthday.ts --network celo",
+    "deploy:foundry": "forge script scripts/forge/deployHappyBirthday.s.sol:DeployHappyBirthday --rpc-url celo --broadcast --verify -vvvv",
+    "lint:forge": "forge fmt --check"
   },
   "dependencies": {
     "@selfxyz/core": "^0.0.19",

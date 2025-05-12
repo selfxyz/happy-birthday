@@ -3,6 +3,7 @@
   out = 'out'
   libs = ['node_modules']
   test = 'test'
+  script = "scripts"
   cache_path  = 'cache_forge'
   solc_version = '0.8.28'
 

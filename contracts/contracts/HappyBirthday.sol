@@ -2,7 +2,6 @@
 pragma solidity 0.8.28;
 
 import { SelfVerificationRoot } from "@selfxyz/contracts/contracts/abstract/SelfVerificationRoot.sol";
-import { ISelfVerificationRoot } from "@selfxyz/contracts/contracts/interfaces/ISelfVerificationRoot.sol";
 import { IVcAndDiscloseCircuitVerifier } from
     "@selfxyz/contracts/contracts/interfaces/IVcAndDiscloseCircuitVerifier.sol";
 import { IIdentityVerificationHubV1 } from "@selfxyz/contracts/contracts/interfaces/IIdentityVerificationHubV1.sol";
