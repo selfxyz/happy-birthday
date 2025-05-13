@@ -19,7 +19,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             console.log("Public signals:", publicSignals);
 
             // Contract details
-            const contractAddress = "0x881ED38b3ba7EE24eEAD094FA5D6ddD2F56Ba1c0";
+            // valid contract address
+            const contractAddress = "0xeE96ed5b650D2D1D2E2Fa60f2F22687dA8C43a47";
+            // invalid contract address
+            // const contractAddress = "";
 
             // Uncomment this to use the Self backend verifier for offchain verification instead
             // const selfdVerifier = new SelfBackendVerifier(
@@ -36,8 +39,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             console.log("Extracted address from verification result:", address);
 
             // Connect to Celo network
-            const provider = new ethers.JsonRpcProvider("https://forno.celo.org");
-            const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
+            const provider = new ethers.JsonRpcProvider("https://alfajores-forno.celo-testnet.org");
+            const signer = new ethers.Wallet(process.env.CELO_KEY!, provider);
             const contract = new ethers.Contract(contractAddress, abi, signer);
 
             try {

@@ -19,7 +19,7 @@ async function main() {
   // For staging environment
   const identityVerificationHub = "0xDCAa9D9b8E8Bb5696c5d4b47da84aD37b8DEb9A8";
 
-  const scope = hashEndpointWithScope("https://bfcf-2400-4150-8300-2d00-f83f-9c52-f581-17b9.ngrok-free.app", 'Self-Denver-Birthday');
+  const scope = hashEndpointWithScope(futureAddress, 'Self-Happy-Birthday-Example');
   const attestationId = 1n;
 
   // For mainnet environment
@@ -54,7 +54,7 @@ async function main() {
   console.log("SelfHappyBirthday deployed to:", deployedAddress);
   
   console.log("To verify on Celoscan:");
-  console.log(`npx hardhat verify --network celo ${deployedAddress} ${identityVerificationHub} ${scope} ${attestationId} ${token} ${olderThanEnabled} ${olderThan} ${forbiddenCountriesEnabled} "[${forbiddenCountriesListPacked.join(',')}]" "[${ofacEnabled.join(',')}]"`);
+  console.log(`npx hardhat verify --network celoAlfajores ${deployedAddress} ${identityVerificationHub} ${scope} ${attestationId} ${token} ${olderThanEnabled} ${olderThan} ${forbiddenCountriesEnabled} "[${forbiddenCountriesListPacked.join(',')}]" "[${ofacEnabled.join(',')}]"`);
 }
 
 main()

@@ -1258,9 +1258,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@selfxyz/core@npm:^0.0.19":
-  version: 0.0.19
-  resolution: "@selfxyz/core@npm:0.0.19"
+"@selfxyz/core@npm:^0.0.24":
+  version: 0.0.24
+  resolution: "@selfxyz/core@npm:0.0.24"
   dependencies:
     "@types/react": "npm:^18.3.4"
     "@types/react-dom": "npm:^18.3.0"
@@ -1275,9 +1275,8 @@ __metadata:
     snarkjs: "npm:^0.7.4"
     uuid: "npm:^11.1.0"
   peerDependencies:
-    react: ^18.0.0
-    react-dom: ^18.0.0
-  checksum: 10c0/478a052cd34b09cd3950c350cea9f8f44b0bca028bd4507cfccc52c71042a8531a8335c33c1f6c3aec98035eaff8a5ec4f7135cde1bfb3c2c2d9dcd3889e45a6
+    react: ">=16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+  checksum: 10c0/f7583e6d6459755599aaaa37636a8ca944cdfc66363814fcea44aefb7b6252d589a6cc3a9029d4a3f7bae2316f9a1050331919e6d5dbb013cdd5dd87f1e8e767
   languageName: node
   linkType: hard
 
@@ -2730,7 +2729,7 @@ __metadata:
     "@nomicfoundation/hardhat-toolbox": "npm:^5.0.0"
     "@nomicfoundation/hardhat-verify": "npm:^2.0.0"
     "@selfxyz/contracts": "npm:^0.0.2"
-    "@selfxyz/core": "npm:^0.0.19"
+    "@selfxyz/core": "npm:^0.0.24"
     "@typechain/ethers-v6": "npm:^0.5.0"
     "@typechain/hardhat": "npm:^9.0.0"
     "@types/chai": "npm:^4.2.0"

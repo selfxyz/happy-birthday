@@ -46,7 +46,7 @@ function Birthday() {
 
     const selfApp = new SelfAppBuilder({
         appName: "Self Birthday",
-        scope: "Self-Denver-Birthday",
+        scope: "Self-Happy-Birthday-Example",
         // endpoint: "https://happy-birthday-rho-nine.vercel.app/api/verify",
         // run `ngrok http 3000` and copy the url here to test locally
         endpoint: "https://bfcf-2400-4150-8300-2d00-f83f-9c52-f581-17b9.ngrok-free.app/api/verify",
@@ -101,7 +101,7 @@ function Birthday() {
             <div className="container mx-auto max-w-2xl px-4 py-8">
                 <div className="bg-white rounded-lg shadow-md p-6 border border-gray-300">
                     <h2 className="text-2xl font-semibold mb-6 text-center">
-                        🎉 It&apos;s your birthday? Claim 100 USDC 🎂 🎁
+                        🎉 It&apos;s your birthday? Claim 1 USDC 🎂 🎁
                     </h2>
 
                     <div className="mb-6">
