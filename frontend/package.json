@@ -3,18 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "nice": "next lint"
+    "build:hardhat": "npx hardhat compile",
+    "build:foundry": "forge build",
+    "deploy:hardhat": "npx hardhat run scripts/hardhat/deployHappyBirthday.ts --network celo",
+    "deploy:foundry": "forge script scripts/forge/deployHappyBirthday.s.sol:DeployHappyBirthday --rpc-url celo --broadcast --verify -vvvv",
+    "lint:forge": "forge fmt --check"
   },
   "dependencies": {
     "@selfxyz/core": "^0.0.19",
     "@selfxyz/qrcode": "^0.0.17",
     "@vercel/kv": "^3.0.0",
-    "eslint": "9.22.0",
-    "eslint-config-next": "15.2.2",
     "ethers": "^6.13.5",
     "next": "^15.2.2",
     "react": "^19.0.0",

@@ -1,0 +1,5 @@
+forge-std/=node_modules/forge-std/
+hardhat/=node_modules/hardhat/
+@openzeppelin/=node_modules/@openzeppelin/
+@selfxyz/=node_modules/@selfxyz/
+poseidon-solidity/=node_modules/poseidon-solidity/

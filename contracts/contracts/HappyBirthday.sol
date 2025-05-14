@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import {SelfVerificationRoot} from "@selfxyz/contracts/contracts/abstract/SelfVerificationRoot.sol";
-import {ISelfVerificationRoot} from "@selfxyz/contracts/contracts/interfaces/ISelfVerificationRoot.sol";
-import {IVcAndDiscloseCircuitVerifier} from "@selfxyz/contracts/contracts/interfaces/IVcAndDiscloseCircuitVerifier.sol";
-import {IIdentityVerificationHubV1} from "@selfxyz/contracts/contracts/interfaces/IIdentityVerificationHubV1.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {Formatter} from "@selfxyz/contracts/contracts/libraries/Formatter.sol";
-import {CircuitAttributeHandler} from "@selfxyz/contracts/contracts/libraries/CircuitAttributeHandler.sol";
-import {CircuitConstants} from "@selfxyz/contracts/contracts/constants/CircuitConstants.sol";
+import { SelfVerificationRoot } from "@selfxyz/contracts/contracts/abstract/SelfVerificationRoot.sol";
+import { IVcAndDiscloseCircuitVerifier } from
+    "@selfxyz/contracts/contracts/interfaces/IVcAndDiscloseCircuitVerifier.sol";
+import { IIdentityVerificationHubV1 } from "@selfxyz/contracts/contracts/interfaces/IIdentityVerificationHubV1.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { IERC20, SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { Formatter } from "@selfxyz/contracts/contracts/libraries/Formatter.sol";
+import { CircuitAttributeHandler } from "@selfxyz/contracts/contracts/libraries/CircuitAttributeHandler.sol";
+import { CircuitConstants } from "@selfxyz/contracts/contracts/constants/CircuitConstants.sol";
 
 contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
     using SafeERC20 for IERC20;
@@ -19,7 +19,7 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
     // 100 dollar
     // uint256 constant CLAIMABLE_AMOUNT = 100000000;
     // 1 dollar
-    uint256 constant CLAIMABLE_AMOUNT = 1000000;
+    uint256 constant CLAIMABLE_AMOUNT = 1_000_000;
 
     mapping(uint256 => bool) internal _nullifiers;
 
@@ -28,8 +28,8 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
     error RegisteredNullifier();
 
     constructor(
-        address _identityVerificationHub, 
-        uint256 _scope, 
+        address _identityVerificationHub,
+        uint256 _scope,
         uint256 _attestationId,
         address _token,
         bool _olderThanEnabled,
@@ -39,9 +39,9 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
         bool[3] memory _ofacEnabled
     )
         SelfVerificationRoot(
-            _identityVerificationHub, 
-            _scope, 
-            _attestationId, 
+            _identityVerificationHub,
+            _scope,
+            _attestationId,
             _olderThanEnabled,
             _olderThan,
             _forbiddenCountriesEnabled,
@@ -53,12 +53,7 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
         usdc = IERC20(_token);
     }
 
-    function verifySelfProof(
-        IVcAndDiscloseCircuitVerifier.VcAndDiscloseProof memory proof
-    )
-        public
-        override
-    {
+    function verifySelfProof(IVcAndDiscloseCircuitVerifier.VcAndDiscloseProof memory proof) public override {
         if (_scope != proof.pubSignals[CircuitConstants.VC_AND_DISCLOSE_SCOPE_INDEX]) {
             revert InvalidScope();
         }
@@ -71,7 +66,8 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
             revert RegisteredNullifier();
         }
 
-        IIdentityVerificationHubV1.VcAndDiscloseVerificationResult memory result = _identityVerificationHub.verifyVcAndDisclose(
+        IIdentityVerificationHubV1.VcAndDiscloseVerificationResult memory result = _identityVerificationHub
+            .verifyVcAndDisclose(
             IIdentityVerificationHubV1.VcAndDiscloseHubProof({
                 olderThanEnabled: _verificationConfig.olderThanEnabled,
                 olderThan: _verificationConfig.olderThan,
@@ -104,7 +100,7 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
 
         monthBytes[0] = dobBytes[3];
         monthBytes[1] = dobBytes[4];
-        
+
         string memory day = string(dayBytes);
         string memory month = string(monthBytes);
         string memory dobInThisYear = string(abi.encodePacked("25", month, day));
@@ -112,7 +108,7 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
 
         uint256 currentTime = block.timestamp;
         uint256 timeDifference;
-        
+
         if (currentTime > dobInThisYearTimestamp) {
             timeDifference = currentTime - dobInThisYearTimestamp;
         } else {
