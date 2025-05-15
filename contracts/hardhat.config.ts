@@ -1,7 +1,8 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-require("dotenv").config();
 import "@nomicfoundation/hardhat-ignition-ethers";
+import "@nomicfoundation/hardhat-foundry";
+require("dotenv").config();
 const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.28",
@@ -35,7 +36,7 @@ const config: HardhatUserConfig = {
     celo: {
       chainId: 42220,
       url: process.env.CELO_RPC_URL || "https://forno.celo.org",
-      accounts: [process.env.CELO_KEY as string],
+      accounts: process.env.CELO_KEY ? [process.env.CELO_KEY as string] : [],
     },
     celoAlfajores: {
       chainId: 44787,

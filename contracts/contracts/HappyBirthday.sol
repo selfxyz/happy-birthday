@@ -88,7 +88,7 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
 
         monthBytes[0] = dobBytes[3];
         monthBytes[1] = dobBytes[4];
-        
+
         string memory day = string(dayBytes);
         string memory month = string(monthBytes);
         string memory dobInThisYear = string(abi.encodePacked("25", month, day));
@@ -97,7 +97,7 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
 
         uint256 currentTime = block.timestamp;
         uint256 timeDifference;
-        
+
         if (currentTime > dobInThisYearTimestamp) {
             timeDifference = currentTime - dobInThisYearTimestamp;
         } else {
