@@ -1,95 +1,83 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import { SelfVerificationRoot } from "@selfxyz/contracts/contracts/abstract/SelfVerificationRoot.sol";
-import { IVcAndDiscloseCircuitVerifier } from
-    "@selfxyz/contracts/contracts/interfaces/IVcAndDiscloseCircuitVerifier.sol";
-import { IIdentityVerificationHubV1 } from "@selfxyz/contracts/contracts/interfaces/IIdentityVerificationHubV1.sol";
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { IERC20, SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { Formatter } from "@selfxyz/contracts/contracts/libraries/Formatter.sol";
-import { CircuitAttributeHandler } from "@selfxyz/contracts/contracts/libraries/CircuitAttributeHandler.sol";
-import { CircuitConstants } from "@selfxyz/contracts/contracts/constants/CircuitConstants.sol";
+import {SelfVerificationRoot} from "@selfxyz/contracts/contracts/abstract/SelfVerificationRoot.sol";
+import {ISelfVerificationRoot} from "@selfxyz/contracts/contracts/interfaces/ISelfVerificationRoot.sol";
+import {SelfCircuitLibrary} from "@selfxyz/contracts/contracts/libraries/SelfCircuitLibrary.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
     using SafeERC20 for IERC20;
 
     IERC20 public immutable usdc;
+    string public dobReadable;
 
-    // 100 dollar
-    // uint256 constant CLAIMABLE_AMOUNT = 100000000;
-    // 1 dollar
-    uint256 constant CLAIMABLE_AMOUNT = 1_000_000;
+    // Default: 1 dollar (6 decimals for USDC)
+    uint256 public claimableAmount = 1000000;
 
     mapping(uint256 => bool) internal _nullifiers;
 
     event USDCClaimed(address indexed claimer, uint256 amount);
+    event ClaimableAmountUpdated(uint256 oldAmount, uint256 newAmount);
 
     error RegisteredNullifier();
 
     constructor(
-        address _identityVerificationHub,
-        uint256 _scope,
-        uint256 _attestationId,
-        address _token,
-        bool _olderThanEnabled,
-        uint256 _olderThan,
-        bool _forbiddenCountriesEnabled,
-        uint256[4] memory _forbiddenCountriesListPacked,
-        bool[3] memory _ofacEnabled
+        address _identityVerificationHub, 
+        uint256 _scope, 
+        uint256[] memory _attestationIds,
+        address _token
     )
         SelfVerificationRoot(
-            _identityVerificationHub,
-            _scope,
-            _attestationId,
-            _olderThanEnabled,
-            _olderThan,
-            _forbiddenCountriesEnabled,
-            _forbiddenCountriesListPacked,
-            _ofacEnabled
+            _identityVerificationHub, 
+            _scope, 
+            _attestationIds
         )
         Ownable(_msgSender())
     {
         usdc = IERC20(_token);
     }
 
-    function verifySelfProof(IVcAndDiscloseCircuitVerifier.VcAndDiscloseProof memory proof) public override {
-        if (_scope != proof.pubSignals[CircuitConstants.VC_AND_DISCLOSE_SCOPE_INDEX]) {
-            revert InvalidScope();
-        }
+    function setVerificationConfig(
+        ISelfVerificationRoot.VerificationConfig memory newVerificationConfig
+    ) external onlyOwner {
+        _setVerificationConfig(newVerificationConfig);
+    }
 
-        if (_attestationId != proof.pubSignals[CircuitConstants.VC_AND_DISCLOSE_ATTESTATION_ID_INDEX]) {
-            revert InvalidAttestationId();
-        }
+    function setClaimableAmount(uint256 newAmount) external onlyOwner {
+        uint256 oldAmount = claimableAmount;
+        claimableAmount = newAmount;
+        emit ClaimableAmountUpdated(oldAmount, newAmount);
+    }
 
-        if (_nullifiers[proof.pubSignals[CircuitConstants.VC_AND_DISCLOSE_NULLIFIER_INDEX]]) {
+    function verifySelfProof(
+        ISelfVerificationRoot.DiscloseCircuitProof memory proof
+    )
+        public
+        override
+    {
+
+        if (_nullifiers[proof.pubSignals[NULLIFIER_INDEX]]) {
             revert RegisteredNullifier();
         }
 
-        IIdentityVerificationHubV1.VcAndDiscloseVerificationResult memory result = _identityVerificationHub
-            .verifyVcAndDisclose(
-            IIdentityVerificationHubV1.VcAndDiscloseHubProof({
-                olderThanEnabled: _verificationConfig.olderThanEnabled,
-                olderThan: _verificationConfig.olderThan,
-                forbiddenCountriesEnabled: _verificationConfig.forbiddenCountriesEnabled,
-                forbiddenCountriesListPacked: _verificationConfig.forbiddenCountriesListPacked,
-                ofacEnabled: _verificationConfig.ofacEnabled,
-                vcAndDiscloseProof: proof
-            })
-        );
+        super.verifySelfProof(proof);
 
-        if (_isWithinBirthdayWindow(result.revealedDataPacked)) {
-            _nullifiers[result.nullifier] = true;
-            usdc.safeTransfer(address(uint160(result.userIdentifier)), CLAIMABLE_AMOUNT);
-            emit USDCClaimed(address(uint160(result.userIdentifier)), CLAIMABLE_AMOUNT);
+        if (_isWithinBirthdayWindow(
+                getRevealedDataPacked(proof.pubSignals)
+            )
+        ) {
+            _nullifiers[proof.pubSignals[NULLIFIER_INDEX]] = true;
+            usdc.safeTransfer(address(uint160(proof.pubSignals[USER_IDENTIFIER_INDEX])), claimableAmount);
+            emit USDCClaimed(address(uint160(proof.pubSignals[USER_IDENTIFIER_INDEX])), claimableAmount);
         } else {
-            revert("Not eligible: Not within 5 days of birthday");
+            revert("Not eligible: Not within claimable window");
         }
     }
 
-    function _isWithinBirthdayWindow(uint256[3] memory revealedDataPacked) internal view returns (bool) {
-        bytes memory charcodes = Formatter.fieldElementsToBytes(revealedDataPacked);
-        string memory dob = CircuitAttributeHandler.getDateOfBirth(charcodes);
+    function _isWithinBirthdayWindow(uint256[3] memory revealedDataPacked) internal returns (bool) {
+        string memory dob = SelfCircuitLibrary.getDateOfBirth(revealedDataPacked);
 
         bytes memory dobBytes = bytes(dob);
         bytes memory dayBytes = new bytes(2);
@@ -104,7 +92,8 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
         string memory day = string(dayBytes);
         string memory month = string(monthBytes);
         string memory dobInThisYear = string(abi.encodePacked("25", month, day));
-        uint256 dobInThisYearTimestamp = Formatter.dateToUnixTimestamp(dobInThisYear);
+
+        uint256 dobInThisYearTimestamp = SelfCircuitLibrary.dateToTimestamp(dobInThisYear);
 
         uint256 currentTime = block.timestamp;
         uint256 timeDifference;
@@ -115,8 +104,9 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
             timeDifference = dobInThisYearTimestamp - currentTime;
         }
 
-        uint256 fiveDaysInSeconds = 5 days;
-        return timeDifference <= fiveDaysInSeconds;
+        uint256 claimableWindow = 1 days;
+
+        return timeDifference <= claimableWindow;
     }
 
     function withdrawUSDC(address to, uint256 amount) external onlyOwner {
