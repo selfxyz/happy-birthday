@@ -6,7 +6,7 @@ import { logo } from './content/birthdayAppLogo';
 import { ethers } from 'ethers';
 
 function Birthday() {
-    const [input, setInput] = useState('0xE6E4b6a802F2e0aeE5676f6010e0AF5C9CDd0a50');
+    const [input, setInput] = useState('0x3a0F761126B034e3031d3C934eDA62251A07D7f1');
     const [address, setAddress] = useState(input);
 
     const [ensName, setEnsName] = useState<string | null>(null);
@@ -47,7 +47,7 @@ function Birthday() {
     const selfApp = new SelfAppBuilder({
         appName: "Self Birthday",
         scope: "Self-Birthday-Example",
-        endpoint: "0x4248AE703a6d2b0AE6B85647ed0fbCFC6FF56F60",
+        endpoint: "0x74d260A43425a61e732fc6E2132373A707Abf1C0",
         endpointType: "staging_celo",
         logoBase64: logo,
         userId: address,

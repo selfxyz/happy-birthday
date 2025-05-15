@@ -10,7 +10,7 @@
     "nice": "next lint"
   },
   "dependencies": {
-    "@selfxyz/core": "^0.0.24",
+    "@selfxyz/core": "^0.0.25",
     "@selfxyz/qrcode": "^0.0.19",
     "@vercel/kv": "^3.0.0",
     "eslint": "9.22.0",

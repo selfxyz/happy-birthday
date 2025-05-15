@@ -13,14 +13,13 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
     IERC20 public immutable usdc;
     string public dobReadable;
 
-    // 100 dollar
-    // uint256 constant CLAIMABLE_AMOUNT = 100000000;
-    // 1 dollar
-    uint256 constant CLAIMABLE_AMOUNT = 1000000;
+    // Default: 1 dollar (6 decimals for USDC)
+    uint256 public claimableAmount = 1000000;
 
     mapping(uint256 => bool) internal _nullifiers;
 
     event USDCClaimed(address indexed claimer, uint256 amount);
+    event ClaimableAmountUpdated(uint256 oldAmount, uint256 newAmount);
 
     error RegisteredNullifier();
 
@@ -46,6 +45,12 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
         _setVerificationConfig(newVerificationConfig);
     }
 
+    function setClaimableAmount(uint256 newAmount) external onlyOwner {
+        uint256 oldAmount = claimableAmount;
+        claimableAmount = newAmount;
+        emit ClaimableAmountUpdated(oldAmount, newAmount);
+    }
+
     function verifySelfProof(
         ISelfVerificationRoot.DiscloseCircuitProof memory proof
     )
@@ -64,10 +69,10 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
             )
         ) {
             _nullifiers[proof.pubSignals[NULLIFIER_INDEX]] = true;
-            usdc.safeTransfer(address(uint160(proof.pubSignals[USER_IDENTIFIER_INDEX])), CLAIMABLE_AMOUNT);
-            emit USDCClaimed(address(uint160(proof.pubSignals[USER_IDENTIFIER_INDEX])), CLAIMABLE_AMOUNT);
+            usdc.safeTransfer(address(uint160(proof.pubSignals[USER_IDENTIFIER_INDEX])), claimableAmount);
+            emit USDCClaimed(address(uint160(proof.pubSignals[USER_IDENTIFIER_INDEX])), claimableAmount);
         } else {
-            revert("Not eligible: Not within 5 days of birthday");
+            revert("Not eligible: Not within claimable window");
         }
     }
 
@@ -99,9 +104,9 @@ contract SelfHappyBirthday is SelfVerificationRoot, Ownable {
             timeDifference = dobInThisYearTimestamp - currentTime;
         }
 
-        uint256 fiveDaysInSeconds = 5 days;
+        uint256 claimableWindow = 1 days;
 
-        return timeDifference <= fiveDaysInSeconds;
+        return timeDifference <= claimableWindow;
     }
 
     function withdrawUSDC(address to, uint256 amount) external onlyOwner {

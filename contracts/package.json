@@ -7,7 +7,9 @@
     "build": "npx hardhat compile",
     "deploy:celo": "npx hardhat run scripts/deployHappyBirthday.ts --network celo",
     "deploy:alfajores": "npx hardhat run scripts/deployHappyBirthday.ts --network celoAlfajores",
-    "deploy:sepolia": "npx hardhat run scripts/deployHappyBirthday.ts --network sepolia"
+    "deploy:sepolia": "npx hardhat run scripts/deployHappyBirthday.ts --network sepolia",
+    "update:claimable:alfajores": "npx hardhat run scripts/updateClaimableAmount.ts --network celoAlfajores",
+    "update:claimable:celo": "npx hardhat run scripts/updateClaimableAmount.ts --network celo"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
@@ -33,6 +35,6 @@
   },
   "dependencies": {
     "@selfxyz/contracts": "^0.0.8",
-    "@selfxyz/core": "^0.0.19"
+    "@selfxyz/core": "^0.0.25"
   }
 }

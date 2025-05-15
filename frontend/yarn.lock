@@ -632,10 +632,10 @@
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.11.0.tgz#75dce8e972f90bba488e2b0cc677fb233aa357ab"
   integrity sha512-zxnHvoMQVqewTJr/W4pKjF0bMGiKJv1WX7bSrkl46Hg0QjESbzBROWK0Wg4RphzSOS5Jiy7eFimmM3UgMrMZbQ==
 
-"@selfxyz/core@^0.0.24":
-  version "0.0.24"
-  resolved "https://registry.yarnpkg.com/@selfxyz/core/-/core-0.0.24.tgz#97a081de985891280a2c187c3ebd0068c1daefb9"
-  integrity sha512-ijYsaGPdvq9/r31JVS7dETyeBCC0phuUn1GpkI1P2mBRS/qfcq/ZhlGUDw5Zuo4Wbfg0ov49Oxq8Nw6U/p7rRw==
+"@selfxyz/core@^0.0.25":
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/@selfxyz/core/-/core-0.0.25.tgz#8b4fad354e1229d8f83f6c1ac3aec70eb339476c"
+  integrity sha512-yZfcLag03Mf5z7MlG4VUaaT+KiMGXDbh+BUmEU73oG+AYpo8nOh+QSbLGPxqmrK0PR43AepACeqqqrXHfeXTtQ==
   dependencies:
     "@types/react" "^18.3.4"
     "@types/react-dom" "^18.3.0"
