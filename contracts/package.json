@@ -5,9 +5,9 @@
   "license": "MIT",
   "scripts": {
     "build": "npx hardhat compile",
-    "deploy:celo": "npx hardhat run scripts/deployHappyBirthday.ts --network celo",
-    "deploy:alfajores": "npx hardhat run scripts/deployHappyBirthday.ts --network celoAlfajores",
-    "deploy:sepolia": "npx hardhat run scripts/deployHappyBirthday.ts --network sepolia",
+    "deploy:celo": "npx hardhat run scripts/hardhat/deployHappyBirthday.ts --network celo",
+    "deploy:alfajores": "npx hardhat run scripts/hardhat/deployHappyBirthday.ts --network celoAlfajores",
+    "deploy:sepolia": "npx hardhat run scripts/hardhat/deployHappyBirthday.ts --network sepolia",
     "update:claimable:alfajores": "npx hardhat run scripts/updateClaimableAmount.ts --network celoAlfajores",
     "update:claimable:celo": "npx hardhat run scripts/updateClaimableAmount.ts --network celo"
   },
