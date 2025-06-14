@@ -31,7 +31,7 @@ async function main() {
   const olderThan = 18n;
   const forbiddenCountriesEnabled = false;
   const forbiddenCountriesListPacked = [0n, 0n, 0n, 0n] as [bigint, bigint, bigint, bigint];
-  const ofacEnabled = [true, true, true] as [boolean, boolean, boolean];
+  const ofacEnabled = [false, false, false] as [boolean, boolean, boolean];
   
   const SelfHappyBirthday = await ethers.getContractFactory("SelfHappyBirthday");
 
