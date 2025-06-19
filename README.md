@@ -11,8 +11,8 @@ This example introduces a contract that verifies a user's passport birthday and 
 
 - Node.js and Yarn installed
 - It is recommended to install [ngrok](https://ngrok.com/) before starting, which will be useful for testing the frontend locally.
-- A funded wallet on Celo Alfajores testnet (for deployment)
-- Test USDC to distribute (get from [Celo faucet](https://faucet.celo.org))
+- A funded wallet on Celo Alfajores testnet (for deployment - get from [Celo faucet](https://faucet.celo.org))
+- Test USDC to distribute (get from [Circle faucet](https://faucet.circle.com/))
 
 ### Deploying the Contract
 
@@ -37,7 +37,7 @@ This example introduces a contract that verifies a user's passport birthday and 
    CELOSCAN_API_KEY=your_celoscan_api_key_here
    ```
 
-4. Build the contracts:
+4. Build the contracts (from the contracts directory):
    ```bash
    yarn run build
    ```
@@ -56,7 +56,11 @@ This example introduces a contract that verifies a user's passport birthday and 
 
 6. Deploy the contracts:
    ```bash
-   yarn run deploy:celo-alfajores
+   # For testnet (Celo Alfajores)
+   yarn deploy:alfajores
+   
+   # For mainnet (Celo)
+   yarn deploy:celo
    ```
    
    After deployment, note the deployed contract address from the output.
@@ -89,7 +93,7 @@ This example introduces a contract that verifies a user's passport birthday and 
 5. **Important**: Fund the deployed contract with USDC:
    - The contract needs USDC to distribute to eligible users
    - Send test USDC to your deployed contract address
-   - You can get test USDC from the [Celo faucet](https://faucet.celo.org)
+   - You can get test USDC from the [Circle faucet](https://faucet.circle.com/)
 
 6. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 

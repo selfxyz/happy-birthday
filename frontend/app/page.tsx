@@ -9,7 +9,6 @@ function Birthday() {
     const [input, setInput] = useState('0x289B7B7A15f0B696f1196017920eA895762f011c');
     const [address, setAddress] = useState(input);
 
-    const [ensName, setEnsName] = useState<string | null>(null);
     const [claimSuccess, setClaimSuccess] = useState(false);
     const [txHash, setTxHash] = useState<string | null>(null);
 
@@ -17,32 +16,6 @@ function Birthday() {
         if (ethers.isAddress(input)) {
             setAddress(input);
         }
-    }, [input]);
-
-    useEffect(() => {
-        const resolveEns = async () => {
-            try {
-                const provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/84842078b09946638c03157f83405213');
-    
-                if (input.toLowerCase().endsWith('.eth')) {
-                    const resolvedAddress = await provider.resolveName(input);
-                    if (resolvedAddress) {
-                        setAddress(resolvedAddress);
-                        setEnsName(input);
-                    }
-                } else if (ethers.isAddress(input)) {
-                    const resolvedName = await provider.lookupAddress(input);
-                    setEnsName(resolvedName);
-                } else {
-                    setEnsName(null);
-                }
-            } catch (error) {
-                console.error('Error resolving ENS:', error);
-                setEnsName(null);
-            }
-        };
-    
-        resolveEns();
     }, [input]);
 
 
