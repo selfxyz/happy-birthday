@@ -68,7 +68,7 @@ async function main() {
   console.log("Verification config set successfully");
   
   console.log("\nTo verify on Celoscan:");
-  console.log(`npx hardhat verify --network celoAlfajores ${deployedAddress} ${identityVerificationHub} ${scope} ${attestationId} ${token}`);
+  console.log(`npx hardhat verify --network celoAlfajores ${deployedAddress} ${identityVerificationHub} ${scope} "[${attestationId}]" ${token}`);
 }
 
 main()

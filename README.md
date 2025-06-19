@@ -79,13 +79,13 @@ This example introduces a contract that verifies a user's passport birthday and 
 
 3. Update the contract address:
    - Open `frontend/app/page.tsx`
-   - Find the `CONTRACT_ADDRESS` constant near the top
+   - Find the `HAPPY_BIRTHDAY_CONTRACT_ADDRESS` constant near the top
    - Replace it with your newly deployed contract address:
    ```javascript
-   const CONTRACT_ADDRESS = "0xYourDeployedContractAddress";
+   const HAPPY_BIRTHDAY_CONTRACT_ADDRESS = "0xYourDeployedContractAddress";
    ```
 
-4. Start the development server:
+4. Start the development server (from the frontend directory):
    ```bash
    yarn dev
    ```
