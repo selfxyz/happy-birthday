@@ -5,9 +5,12 @@ import SelfQRcodeWrapper, { SelfApp, SelfAppBuilder } from '@selfxyz/qrcode';
 import { logo } from './content/birthdayAppLogo';
 import { ethers } from 'ethers';
 
+// SelfHappyBirthday contract address deployed on Celo Alfajores testnet
+const HAPPY_BIRTHDAY_CONTRACT_ADDRESS = "0x97d01A133c9Bfd77D6b7147d36bAA005b48735aa";
+
 function Birthday() {
-    const [input, setInput] = useState('0x289B7B7A15f0B696f1196017920eA895762f011c');
-    const [address, setAddress] = useState(input);
+    const [input, setInput] = useState('');
+    const [address, setAddress] = useState('');
 
     const [claimSuccess, setClaimSuccess] = useState(false);
     const [txHash, setTxHash] = useState<string | null>(null);
@@ -22,7 +25,7 @@ function Birthday() {
     const selfApp = new SelfAppBuilder({
         appName: "Self Birthday",
         scope: "Self-Birthday-Example",
-        endpoint: "0x97d01A133c9Bfd77D6b7147d36bAA005b48735aa",
+        endpoint: HAPPY_BIRTHDAY_CONTRACT_ADDRESS,
         endpointType: "staging_celo",
         logoBase64: logo,
         userId: address,
@@ -85,20 +88,15 @@ function Birthday() {
 
                     <div className="mb-6">
                         <label className="block text-sm font-medium mb-2">
-                            Enter your wallet address or ENS name:
+                            Enter your wallet address:
                         </label>
                         <input
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="0x... or name.eth"
+                            placeholder="0x..."
                             className="w-full p-2 border border-gray-300 rounded"
                         />
-                        {ensName && ensName !== address && (
-                            <p className="mt-2 text-sm text-gray-600">
-                                ✓ Resolved: {ensName}
-                            </p>
-                        )}
                     </div>
 
                     {selfApp && (
