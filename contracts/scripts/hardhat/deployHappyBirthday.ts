@@ -27,11 +27,17 @@ async function main() {
   // For staging environment
   const token = "0x2F25deB3848C207fc8E0c34035B3Ba7fC157602B";
 
+  // Mock passport configuration (development/staging)
+  // Set devMode to true when using mock passports
+  const devMode = true;
+  
   const olderThanEnabled = false;
   const olderThan = 18n;
   const forbiddenCountriesEnabled = false;
   const forbiddenCountriesListPacked = [0n, 0n, 0n, 0n] as [bigint, bigint, bigint, bigint];
-  const ofacEnabled = [true, true, true] as [boolean, boolean, boolean];
+  // IMPORTANT: Set to [false, false, false] for mock passports on staging
+  // Set to [true, true, true] for real passports on production
+  const ofacEnabled = [false, false, false] as [boolean, boolean, boolean];
   
   const SelfHappyBirthday = await ethers.getContractFactory("SelfHappyBirthday");
 
@@ -62,7 +68,7 @@ async function main() {
   console.log("Verification config set successfully");
   
   console.log("\nTo verify on Celoscan:");
-  console.log(`npx hardhat verify --network celoAlfajores ${deployedAddress} ${identityVerificationHub} ${scope} ${attestationId} ${token}`);
+  console.log(`npx hardhat verify --network celoAlfajores ${deployedAddress} ${identityVerificationHub} ${scope} "[${attestationId}]" ${token}`);
 }
 
 main()

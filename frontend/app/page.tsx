@@ -5,11 +5,15 @@ import SelfQRcodeWrapper, { SelfApp, SelfAppBuilder } from '@selfxyz/qrcode';
 import { logo } from './content/birthdayAppLogo';
 import { ethers } from 'ethers';
 
-function Birthday() {
-    const [input, setInput] = useState('0x3a0F761126B034e3031d3C934eDA62251A07D7f1');
-    const [address, setAddress] = useState(input);
+// SelfHappyBirthday contract address deployed on Celo Alfajores testnet
+const HAPPY_BIRTHDAY_CONTRACT_ADDRESS = "0x97d01A133c9Bfd77D6b7147d36bAA005b48735aa";
 
-    const [ensName, setEnsName] = useState<string | null>(null);
+function Birthday() {
+    const [input, setInput] = useState('');
+    const [address, setAddress] = useState('');
+
+    const [claimSuccess, setClaimSuccess] = useState(false);
+    const [txHash, setTxHash] = useState<string | null>(null);
 
     useEffect(() => {
         if (ethers.isAddress(input)) {
@@ -17,37 +21,11 @@ function Birthday() {
         }
     }, [input]);
 
-    useEffect(() => {
-        const resolveEns = async () => {
-            try {
-                const provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/84842078b09946638c03157f83405213');
-    
-                if (input.toLowerCase().endsWith('.eth')) {
-                    const resolvedAddress = await provider.resolveName(input);
-                    if (resolvedAddress) {
-                        setAddress(resolvedAddress);
-                        setEnsName(input);
-                    }
-                } else if (ethers.isAddress(input)) {
-                    const resolvedName = await provider.lookupAddress(input);
-                    setEnsName(resolvedName);
-                } else {
-                    setEnsName(null);
-                }
-            } catch (error) {
-                console.error('Error resolving ENS:', error);
-                setEnsName(null);
-            }
-        };
-    
-        resolveEns();
-    }, [input]);
-
 
     const selfApp = new SelfAppBuilder({
         appName: "Self Birthday",
         scope: "Self-Birthday-Example",
-        endpoint: "0x74d260A43425a61e732fc6E2132373A707Abf1C0",
+        endpoint: HAPPY_BIRTHDAY_CONTRACT_ADDRESS,
         endpointType: "staging_celo",
         logoBase64: logo,
         userId: address,
@@ -58,8 +36,13 @@ function Birthday() {
         devMode: true,
     } as Partial<SelfApp>).build();
 
-    const handleSuccess = async () => {
-        console.log('Verification successful');
+    const handleSuccess = async (data?: any) => {
+        console.log('Verification successful', data);
+        setClaimSuccess(true);
+        // If we get a tx hash from the data, use it
+        if (data?.txHash) {
+            setTxHash(data.txHash);
+        }
     };
 
     return (
@@ -100,25 +83,20 @@ function Birthday() {
             <div className="container mx-auto max-w-2xl px-4 py-8">
                 <div className="bg-white rounded-lg shadow-md p-6 border border-gray-300">
                     <h2 className="text-2xl font-semibold mb-6 text-center">
-                        🎉 It&apos;s your birthday? Claim 100 USDC 🎂 🎁
+                        🎉 It&apos;s your birthday? Claim 1 USDC 🎂 🎁
                     </h2>
 
                     <div className="mb-6">
                         <label className="block text-sm font-medium mb-2">
-                            Enter your wallet address or ENS name:
+                            Enter your wallet address:
                         </label>
                         <input
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="0x... or name.eth"
+                            placeholder="0x..."
                             className="w-full p-2 border border-gray-300 rounded"
                         />
-                        {ensName && ensName !== address && (
-                            <p className="mt-2 text-sm text-gray-600">
-                                ✓ Resolved: {ensName}
-                            </p>
-                        )}
                     </div>
 
                     {selfApp && (
@@ -128,6 +106,38 @@ function Birthday() {
                                 type='websocket'
                                 onSuccess={handleSuccess}
                             />
+                        </div>
+                    )}
+
+                    {claimSuccess && (
+                        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <h3 className="text-lg font-semibold text-green-800 mb-2">
+                                🎉 Congratulations! Birthday USDC Claimed!
+                            </h3>
+                            <p className="text-sm text-green-700 mb-3">
+                                You have successfully claimed 1 USDC to your wallet address.
+                            </p>
+                            <div className="space-y-2">
+                                {txHash ? (
+                                    <a
+                                        href={`https://alfajores.celoscan.io/tx/${txHash}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center text-blue-600 hover:underline"
+                                    >
+                                        View Transaction on Celoscan →
+                                    </a>
+                                ) : (
+                                    <a
+                                        href={`https://alfajores.celoscan.io/address/${address}#tokentxns`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center text-blue-600 hover:underline"
+                                    >
+                                        View Your Token Transfers on Celoscan →
+                                    </a>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
