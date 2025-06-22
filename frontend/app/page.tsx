@@ -11,6 +11,7 @@ const HAPPY_BIRTHDAY_CONTRACT_ADDRESS = "0x97d01A133c9Bfd77D6b7147d36bAA005b4873
 function Birthday() {
     const [input, setInput] = useState('');
     const [address, setAddress] = useState('');
+    const [selfApp, setSelfApp] = useState<SelfApp | null>(null);
 
     const [claimSuccess, setClaimSuccess] = useState(false);
     const [txHash, setTxHash] = useState<string | null>(null);
@@ -18,23 +19,27 @@ function Birthday() {
     useEffect(() => {
         if (ethers.isAddress(input)) {
             setAddress(input);
+            
+            const app = new SelfAppBuilder({
+                appName: "Self Birthday",
+                scope: "Self-Birthday-Example",
+                endpoint: HAPPY_BIRTHDAY_CONTRACT_ADDRESS,
+                endpointType: "staging_celo",
+                logoBase64: logo,
+                userId: input,
+                userIdType: "hex",
+                disclosures: {
+                    date_of_birth: true,
+                },
+                devMode: true,
+            } as Partial<SelfApp>).build();
+            
+            setSelfApp(app);
+        } else {
+            setAddress('');
+            setSelfApp(null);
         }
     }, [input]);
-
-
-    const selfApp = new SelfAppBuilder({
-        appName: "Self Birthday",
-        scope: "Self-Birthday-Example",
-        endpoint: HAPPY_BIRTHDAY_CONTRACT_ADDRESS,
-        endpointType: "staging_celo",
-        logoBase64: logo,
-        userId: address,
-        userIdType: "hex",
-        disclosures: {
-            date_of_birth: true,
-        },
-        devMode: true,
-    } as Partial<SelfApp>).build();
 
     const handleSuccess = async (data?: any) => {
         console.log('Verification successful', data);
@@ -97,15 +102,26 @@ function Birthday() {
                             placeholder="0x..."
                             className="w-full p-2 border border-gray-300 rounded"
                         />
+                        {input && !ethers.isAddress(input) && (
+                            <p className="text-red-500 text-sm mt-1">
+                                Please enter a valid Ethereum address
+                            </p>
+                        )}
                     </div>
 
-                    {selfApp && (
+                    {selfApp && address && (
                         <div className="flex justify-center mb-6">
                             <SelfQRcodeWrapper
                                 selfApp={selfApp}
                                 type='websocket'
                                 onSuccess={handleSuccess}
                             />
+                        </div>
+                    )}
+
+                    {!address && (
+                        <div className="text-center text-gray-500 mb-6">
+                            Enter a valid wallet address to generate QR code
                         </div>
                     )}
 
