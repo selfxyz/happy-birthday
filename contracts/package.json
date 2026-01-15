@@ -5,11 +5,9 @@
   "license": "MIT",
   "scripts": {
     "build": "npx hardhat compile",
-    "deploy:celo": "npx hardhat run scripts/hardhat/deployHappyBirthday.ts --network celo",
-    "deploy:alfajores": "npx hardhat run scripts/hardhat/deployHappyBirthday.ts --network celoAlfajores",
-    "deploy:sepolia": "npx hardhat run scripts/hardhat/deployHappyBirthday.ts --network sepolia",
-    "update:claimable:alfajores": "npx hardhat run scripts/updateClaimableAmount.ts --network celoAlfajores",
-    "update:claimable:celo": "npx hardhat run scripts/updateClaimableAmount.ts --network celo"
+    "deploy:celoSepolia": "npx hardhat run scripts/hardhat/deploy.ts --network celoSepolia",
+    "deploy:celo": "npx hardhat run scripts/hardhat/deploy.ts --network celo",
+    "update:amount": "npx hardhat run scripts/hardhat/updateClaimableAmount.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
@@ -36,7 +34,7 @@
     "typescript": ">=4.5.0"
   },
   "dependencies": {
-    "@selfxyz/contracts": "^0.0.8",
+    "@selfxyz/contracts": "^1.2.3",
     "@selfxyz/core": "^0.0.25"
   },
   "packageManager": "yarn@3.6.3+sha512.d432ab8b22b89cb8b46649ebaf196159b0c1870904224771d75fdf8b55490aaa5de4d9f028deb0425f1513bff7843e97b9d117103795a23b12d2e7c1cedcf50f"

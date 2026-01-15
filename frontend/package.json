@@ -14,8 +14,7 @@
     "lint:forge": "forge fmt --check"
   },
   "dependencies": {
-    "@selfxyz/core": "^0.0.25",
-    "@selfxyz/qrcode": "^0.0.19",
+    "@selfxyz/qrcode": "^1.0.15",
     "@vercel/kv": "^3.0.0",
     "ethers": "^6.13.5",
     "next": "15.2.8",

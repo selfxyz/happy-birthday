@@ -1,16 +1,24 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import SelfQRcodeWrapper, { SelfApp, SelfAppBuilder } from '@selfxyz/qrcode';
+import dynamic from 'next/dynamic';
 import { logo } from './content/birthdayAppLogo';
 import { ethers } from 'ethers';
 
-// SelfHappyBirthday contract address deployed on Celo Alfajores testnet
-const HAPPY_BIRTHDAY_CONTRACT_ADDRESS = "0x97d01A133c9Bfd77D6b7147d36bAA005b48735aa";
+// Dynamically import Self SDK components to avoid SSR issues
+const SelfQRcodeWrapper = dynamic(
+    () => import('@selfxyz/qrcode').then((mod) => mod.SelfQRcodeWrapper),
+    { ssr: false, loading: () => <div className="w-[256px] h-[256px] bg-gray-100 animate-pulse flex items-center justify-center rounded"><p className="text-gray-500 text-sm">Loading...</p></div> }
+);
+
+// Contract address - set via environment variable after deployment
+const HAPPY_BIRTHDAY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_SELF_ENDPOINT || "";
+const SCOPE_SEED = process.env.NEXT_PUBLIC_SELF_SCOPE_SEED || "Self-Birthday-Example";
 
 function Birthday() {
     const [input, setInput] = useState('');
     const [address, setAddress] = useState('');
+    const [selfApp, setSelfApp] = useState<any>(null);
 
     const [claimSuccess, setClaimSuccess] = useState(false);
     const [txHash, setTxHash] = useState<string | null>(null);
@@ -21,20 +29,34 @@ function Birthday() {
         }
     }, [input]);
 
+    // Initialize SelfApp when address changes
+    useEffect(() => {
+        if (!address || !HAPPY_BIRTHDAY_CONTRACT_ADDRESS) return;
 
-    const selfApp = new SelfAppBuilder({
-        appName: "Self Birthday",
-        scope: "Self-Birthday-Example",
-        endpoint: HAPPY_BIRTHDAY_CONTRACT_ADDRESS,
-        endpointType: "staging_celo",
-        logoBase64: logo,
-        userId: address,
-        userIdType: "hex",
-        disclosures: {
-            date_of_birth: true,
-        },
-        devMode: true,
-    } as Partial<SelfApp>).build();
+        // Dynamically import and initialize Self SDK
+        import('@selfxyz/qrcode').then(({ SelfAppBuilder }) => {
+            try {
+                const app = new SelfAppBuilder({
+                    version: 2,
+                    appName: "Self Birthday",
+                    scope: SCOPE_SEED,
+                    endpoint: HAPPY_BIRTHDAY_CONTRACT_ADDRESS.toLowerCase(),
+                    endpointType: "staging_celo",
+                    logoBase64: logo,
+                    userId: address,
+                    userIdType: "hex",
+                    disclosures: {
+                        date_of_birth: true,
+                    },
+                    devMode: true,
+                }).build();
+
+                setSelfApp(app);
+            } catch (error) {
+                console.error("Failed to initialize Self app:", error);
+            }
+        });
+    }, [address]);
 
     const handleSuccess = async (data?: any) => {
         console.log('Verification successful', data);
@@ -51,17 +73,17 @@ function Birthday() {
                 <div className="flex items-center">
                     <div className="mr-8">
                         <img
-                            src="/self.svg" 
-                            alt="Self Logo" 
+                            src="/self.svg"
+                            alt="Self Logo"
                             className="h-8"
                         />
                     </div>
                 </div>
                 <div className="flex items-center space-x-4">
-                    <a 
-                        href="https://github.com/zk-passport/openpassport" 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
+                    <a
+                        href="https://github.com/zk-passport/openpassport"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="bg-gray-900 text-white px-4 py-2 rounded-md flex items-center hover:bg-gray-800 transition-colors"
                     >
                         <span className="mr-2">Star on Github</span>
@@ -83,8 +105,16 @@ function Birthday() {
             <div className="container mx-auto max-w-2xl px-4 py-8">
                 <div className="bg-white rounded-lg shadow-md p-6 border border-gray-300">
                     <h2 className="text-2xl font-semibold mb-6 text-center">
-                        🎉 It&apos;s your birthday? Claim 1 USDC 🎂 🎁
+                        It&apos;s your birthday? Claim 1 USDC
                     </h2>
+
+                    {!HAPPY_BIRTHDAY_CONTRACT_ADDRESS && (
+                        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <p className="text-sm text-yellow-800">
+                                Contract not configured. Set NEXT_PUBLIC_SELF_ENDPOINT in your .env file.
+                            </p>
+                        </div>
+                    )}
 
                     <div className="mb-6">
                         <label className="block text-sm font-medium mb-2">
@@ -103,43 +133,61 @@ function Birthday() {
                         <div className="flex justify-center mb-6">
                             <SelfQRcodeWrapper
                                 selfApp={selfApp}
-                                type='websocket'
                                 onSuccess={handleSuccess}
+                                onError={(error: any) => console.error('Verification error:', error)}
                             />
+                        </div>
+                    )}
+
+                    {!selfApp && address && HAPPY_BIRTHDAY_CONTRACT_ADDRESS && (
+                        <div className="flex justify-center mb-6">
+                            <div className="w-[256px] h-[256px] bg-gray-100 animate-pulse flex items-center justify-center rounded">
+                                <p className="text-gray-500 text-sm">Loading QR Code...</p>
+                            </div>
                         </div>
                     )}
 
                     {claimSuccess && (
                         <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                             <h3 className="text-lg font-semibold text-green-800 mb-2">
-                                🎉 Congratulations! Birthday USDC Claimed!
+                                Congratulations! Birthday USDC Claimed!
                             </h3>
                             <p className="text-sm text-green-700 mb-3">
-                                You have successfully claimed 1 USDC to your wallet address.
+                                You have successfully claimed USDC to your wallet address.
                             </p>
                             <div className="space-y-2">
                                 {txHash ? (
                                     <a
-                                        href={`https://alfajores.celoscan.io/tx/${txHash}`}
+                                        href={`https://celo-sepolia.blockscout.com/tx/${txHash}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center text-blue-600 hover:underline"
                                     >
-                                        View Transaction on Celoscan →
+                                        View Transaction on Blockscout →
                                     </a>
                                 ) : (
                                     <a
-                                        href={`https://alfajores.celoscan.io/address/${address}#tokentxns`}
+                                        href={`https://celo-sepolia.blockscout.com/address/${address}#tokentxns`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center text-blue-600 hover:underline"
                                     >
-                                        View Your Token Transfers on Celoscan →
+                                        View Your Token Transfers on Blockscout →
                                     </a>
                                 )}
                             </div>
                         </div>
                     )}
+
+                    {/* Info about V2 features */}
+                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h4 className="text-sm font-medium text-blue-800 mb-2">V2 Features</h4>
+                        <ul className="text-xs text-blue-700 space-y-1">
+                            <li>• Supports both E-Passport and EU ID cards</li>
+                            <li>• EU ID card users get 2x bonus rewards</li>
+                            <li>• Birthday window: ±1 day from your actual birthday</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

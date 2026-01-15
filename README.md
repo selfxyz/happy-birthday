@@ -11,8 +11,8 @@ This example introduces a contract that verifies a user's passport birthday and 
 
 - Node.js and Yarn installed
 - It is recommended to install [ngrok](https://ngrok.com/) before starting, which will be useful for testing the frontend locally.
-- A funded wallet on Celo Alfajores testnet (for deployment - get from [Celo faucet](https://faucet.celo.org))
-- Test USDC to distribute (get from [Circle faucet](https://faucet.circle.com/))
+- A funded wallet on Celo Sepolia testnet (for deployment - get from [Celo faucet](https://faucet.celo.org))
+- Test USDC to distribute (get from [Circle faucet](https://faucet.circle.com/) - select Celo Sepolia)
 
 ### Deploying the Contract
 
@@ -28,42 +28,28 @@ This example introduces a contract that verifies a user's passport birthday and 
 
 3. Configure environment variables:
    - Copy `.env.example` to `.env` (or create a new `.env` file)
-   - Add the following required values:
+   - Add your private key:
    ```env
-   # Private key for deployment (without 0x prefix)
-   CELO_ALFAJORES_KEY=your_private_key_here
-   
-   # Celoscan API key for contract verification (optional but recommended)
-   CELOSCAN_API_KEY=your_celoscan_api_key_here
+   PRIVATE_KEY=your_private_key_here
    ```
 
 4. Build the contracts (from the contracts directory):
    ```bash
-   yarn run build
+   yarn build
    ```
 
-5. Configure the passport environment in `contracts/scripts/hardhat/deployHappyBirthday.ts`:
-   - For **mock passports** (testing/development):
-     ```javascript
-     devMode: true,
-     ofacEnabled: [false, false, false], // Disable OFAC for mock passports
-     ```
-   - For **real passports** (production):
-     ```javascript
-     devMode: false,
-     ofacEnabled: [true, true, true], // Enable OFAC for real passports
-     ```
-
-6. Deploy the contracts:
+5. Deploy the contracts:
    ```bash
-   # For testnet (Celo Alfajores)
-   yarn deploy:alfajores
-   
+   # For testnet (Celo Sepolia)
+   yarn deploy:celoSepolia
+
    # For mainnet (Celo)
    yarn deploy:celo
    ```
-   
+
    After deployment, note the deployed contract address from the output.
+
+   > **Note**: OFAC checking is automatically disabled on testnet and enabled on mainnet.
 
 ### Setting Up the Frontend
 
@@ -77,12 +63,12 @@ This example introduces a contract that verifies a user's passport birthday and 
    yarn install
    ```
 
-3. Update the contract address:
-   - Open `frontend/app/page.tsx`
-   - Find the `HAPPY_BIRTHDAY_CONTRACT_ADDRESS` constant near the top
-   - Replace it with your newly deployed contract address:
-   ```javascript
-   const HAPPY_BIRTHDAY_CONTRACT_ADDRESS = "0xYourDeployedContractAddress";
+3. Configure environment variables:
+   - Copy `.env.example` to `.env`
+   - Update with your deployed contract address (use lowercase):
+   ```env
+   NEXT_PUBLIC_SELF_ENDPOINT=0xyourdeployedcontractaddress
+   NEXT_PUBLIC_SELF_SCOPE_SEED=Self-Birthday-Example
    ```
 
 4. Start the development server (from the frontend directory):
@@ -105,7 +91,7 @@ This example introduces a contract that verifies a user's passport birthday and 
 - Example: If today is June 14, you can claim if your birthday is June 13, 14, or 15
 
 ### Mock Passport Testing
-- When using mock passports, make sure OFAC is disabled in the deployment script
+- Use Celo Sepolia testnet for testing (OFAC is automatically disabled)
 - Mock passports are pre-configured test passports provided by Self protocol
 - You can set any birthday when creating a mock passport for testing
 
@@ -117,8 +103,8 @@ This example introduces a contract that verifies a user's passport birthday and 
 ### Troubleshooting
 
 1. **"OFAC verification failed" error**:
-   - This happens when using mock passports with OFAC enabled
-   - Redeploy with `ofacEnabled: [false, false, false]`
+   - This happens when using mock passports on mainnet
+   - Use Celo Sepolia testnet for testing with mock passports
 
 2. **"Birthday is not within the valid window" error**:
    - Your passport birthday must be within ±1 day of today
@@ -132,29 +118,18 @@ This example introduces a contract that verifies a user's passport birthday and 
    - This passport (or identity) has already claimed
    - Each person can only claim once
 
-5. **Frontend shows contract scripts in package.json**:
-   - Make sure the frontend `package.json` has Next.js scripts:
-   ```json
-   "scripts": {
-     "dev": "next dev",
-     "build": "next build",
-     "start": "next start",
-     "lint": "next lint"
-   }
-   ```
-
 ## Contract Configuration
 
-The contract supports several configuration options during deployment:
+The contract supports several configuration options (owner-only after deployment):
 
-- `claimableAmount`: Amount of USDC each person can claim (default: 100 USDC)
-- `devMode`: Enable/disable mock passport support
-- `ofacEnabled`: Array of booleans for OFAC checking on different operations
-- `birthdayRange`: Number of days before/after birthday to allow claims (default: 1)
+- `claimableAmount`: Amount of USDC each person can claim (default: 1 USDC)
+- `claimableWindow`: Time window around birthday to allow claims (default: 1 day)
+- `euidBonusMultiplier`: Bonus multiplier for EU ID card users (default: 200% = 2x)
 
 ## Security Considerations
 
-- Always enable OFAC checking for production deployments
+- OFAC checking is automatically enabled on mainnet deployments
 - The contract owner can withdraw unclaimed funds
 - Each passport/identity can only claim once due to the nullifier system
 - The contract uses Self protocol's zero-knowledge proofs to verify passport data without exposing personal information
+- Supports both E-Passports and EU ID cards

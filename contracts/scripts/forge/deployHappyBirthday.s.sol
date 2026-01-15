@@ -1,99 +1,115 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import { Script } from "forge-std/src/Script.sol";
-import { console } from "forge-std/src/console.sol";
-import { SelfHappyBirthday } from "../../contracts/HappyBirthday.sol";
+import {Script} from "forge-std/src/Script.sol";
+import {console} from "forge-std/src/console.sol";
+import {SelfHappyBirthday} from "../../contracts/HappyBirthday.sol";
+import {SelfUtils} from "@selfxyz/contracts/contracts/libraries/SelfUtils.sol";
 
 /**
  * @title DeployHappyBirthday
- * @notice Deployment script for the SelfHappyBirthday contract
+ * @notice Deployment script for the SelfHappyBirthday V2 contract
  *
  * To run this script:
  * 1. Set the PRIVATE_KEY environment variable:
  *    export PRIVATE_KEY=your_private_key_here
  *
- * 2. Set the HASHED_SCOPE environment variable (calculated from the TypeScript SDK):
- *    export HASHED_SCOPE=your_calculated_scope
- *    - You can use the hashEndpointWithScope function from the Self SDK (selfxyz/core) in TypeScript:
- *      Example: const scope = hashEndpointWithScope("your_endpoint", "your_scope_name");
+ * 2. Run the forge script:
+ *    For Celo Sepolia (testnet):
+ *    forge script scripts/forge/deployHappyBirthday.s.sol:DeployHappyBirthdayCeloSepolia --rpc-url celoSepolia --broadcast
  *
- * 3. Set the CELOSCAN_API_KEY environment variable for verification:
- *    export CELOSCAN_API_KEY=your_api_key_here
+ *    For Celo Mainnet:
+ *    forge script scripts/forge/deployHappyBirthday.s.sol:DeployHappyBirthdayCelo --rpc-url celo --broadcast
  *
- * 4. Run the forge script with auto-verification:
- *    forge script contracts/scripts/forge/deployHappyBirthday.s.sol --rpc-url celo --broadcast --verify
- *
- *    For testnet (Alfajores):
- *    forge script contracts/scripts/forge/deployHappyBirthday.s.sol --rpc-url celo-alfajores --broadcast --verify
- *
- * Note: This script uses both the RPC endpoints and Etherscan API configurations from foundry.toml.
- * The --verify flag automatically handles contract verification using the appropriate Etherscan API
- * based on the network you're deploying to.
+ * Note: The verification config is automatically registered with Identity Hub V2 in the constructor.
  */
-contract DeployHappyBirthday is Script {
-    function run() public {
-        // Get the private key from the environment variable
-        uint256 deployerPrivateKey = vm.envUint("CELO_KEY");
+
+abstract contract DeployHappyBirthdayBase is Script {
+    string constant SCOPE_SEED = "Self-Birthday-Example";
+
+    function _deploy(
+        address identityVerificationHub,
+        address usdc,
+        bool ofacEnabled
+    ) internal returns (SelfHappyBirthday) {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address deployerAddress = vm.addr(deployerPrivateKey);
 
-        // Start broadcasting transactions
         vm.startBroadcast(deployerPrivateKey);
 
-        // Log the deployer address
         console.log("Deploying contracts with the account:", deployerAddress);
+        console.log("Identity Hub:", identityVerificationHub);
+        console.log("USDC Token:", usdc);
+        console.log("Scope Seed:", SCOPE_SEED);
 
-        // Calculate the nonce and future address (for informational purposes)
-        uint64 nonce = vm.getNonce(deployerAddress);
-        console.log("Account nonce:", nonce);
+        // Create verification config (UnformattedVerificationConfigV2)
+        // The contract constructor will format and register it with Identity Hub V2
+        string[] memory forbiddenCountries = new string[](0);
+        SelfUtils.UnformattedVerificationConfigV2 memory verificationConfig = SelfUtils
+            .UnformattedVerificationConfigV2({
+                olderThan: 0, // No age restriction
+                forbiddenCountries: forbiddenCountries, // No country restrictions
+                ofacEnabled: ofacEnabled
+            });
 
-        // For prod environment
-        // address identityVerificationHub = 0x9AcA2112D34Ef021084264F6f5eef2a99a5bA7b1;
-        // For staging environment
-        address identityVerificationHub = 0xDCAa9D9b8E8Bb5696c5d4b47da84aD37b8DEb9A8;
-
-        // Note: The scope is the hash of the endpoint and the scope name
-        uint256 scope = vm.envUint("HASHED_SCOPE");
-        console.log("Using scope from environment:", scope);
-
-        uint256 attestationId = 1;
-
-        // For mainnet environment
-        // address token = 0xcebA9300f2b948710d2653dD7B07f33A8B32118C;
-        // For staging environment
-        address token = 0x2F25deB3848C207fc8E0c34035B3Ba7fC157602B;
-
-        bool olderThanEnabled = false;
-        uint256 olderThan = 18;
-        bool forbiddenCountriesEnabled = false;
-        uint256[4] memory forbiddenCountriesListPacked = [uint256(0), uint256(0), uint256(0), uint256(0)];
-        bool[3] memory ofacEnabled = [true, true, true];
-
-        console.log("Deploying SelfHappyBirthday...");
+        console.log("OFAC Enabled:", ofacEnabled);
+        console.log("\nDeploying SelfHappyBirthday V2...");
 
         // Deploy the contract
+        // Constructor will:
+        // 1. Initialize SelfVerificationRoot with hub address and scope seed
+        // 2. Format the verification config using SelfUtils.formatVerificationConfigV2()
+        // 3. Register the config with Identity Hub V2 via setVerificationConfigV2()
+        // 4. Store the returned configId
         SelfHappyBirthday selfHappyBirthday = new SelfHappyBirthday(
             identityVerificationHub,
-            scope,
-            attestationId,
-            token,
-            olderThanEnabled,
-            olderThan,
-            forbiddenCountriesEnabled,
-            forbiddenCountriesListPacked,
-            ofacEnabled
+            SCOPE_SEED,
+            verificationConfig,
+            usdc
         );
 
-        // Stop broadcasting
         vm.stopBroadcast();
 
-        // Log the deployed address
+        // Log deployment info
+        console.log("\n=== DEPLOYMENT SUCCESSFUL ===");
         console.log("SelfHappyBirthday deployed to:", address(selfHappyBirthday));
-        console.log("\n=== DEPLOYMENT SUMMARY ===");
-        console.log("Contract: SelfHappyBirthday");
-        console.log("Address: %s", address(selfHappyBirthday));
-        console.log("Identity Hub: %s", identityVerificationHub);
-        console.log("Token: %s", token);
-        console.log("Scope: %s", scope);
+        console.log("Verification Config ID:", vm.toString(selfHappyBirthday.verificationConfigId()));
+
+        console.log("\n=== FRONTEND CONFIGURATION ===");
+        console.log("Update frontend/.env with:");
+        console.log("NEXT_PUBLIC_SELF_ENDPOINT=", vm.toLowercase(vm.toString(address(selfHappyBirthday))));
+        console.log("NEXT_PUBLIC_SELF_SCOPE_SEED=", SCOPE_SEED);
+
+        return selfHappyBirthday;
+    }
+}
+
+/**
+ * @notice Deploy to Celo Sepolia testnet
+ * Usage: forge script scripts/forge/deployHappyBirthday.s.sol:DeployHappyBirthdayCeloSepolia --rpc-url celoSepolia --broadcast
+ */
+contract DeployHappyBirthdayCeloSepolia is DeployHappyBirthdayBase {
+    // Celo Sepolia configuration
+    address constant IDENTITY_HUB = 0x16ECBA51e18a4a7e61fdC417f0d47AFEeDfbed74;
+    address constant USDC = 0x01C5C0122039549AD1493B8220cABEdD739BC44E;
+
+    function run() public {
+        console.log("Network: Celo Sepolia (chainId: 11142220)");
+        _deploy(IDENTITY_HUB, USDC, false); // OFAC disabled for testnet
+    }
+}
+
+/**
+ * @notice Deploy to Celo Mainnet
+ * Usage: forge script scripts/forge/deployHappyBirthday.s.sol:DeployHappyBirthdayCelo --rpc-url celo --broadcast
+ */
+contract DeployHappyBirthdayCelo is DeployHappyBirthdayBase {
+    // Celo Mainnet configuration
+    address constant IDENTITY_HUB = 0x77117D60eaB7C044e785D68edB6C7E0e134970Ea;
+    address constant USDC = 0xcebA9300f2b948710d2653dD7B07f33A8B32118C;
+
+    function run() public {
+        console.log("Network: Celo Mainnet (chainId: 42220)");
+        _deploy(IDENTITY_HUB, USDC, true); // OFAC enabled for mainnet
     }
 }
